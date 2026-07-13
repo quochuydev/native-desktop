@@ -4,7 +4,7 @@
 <column grow="1" padding="16">
   <column grow="1" main="center" cross="center" gap="8">
     <text size="display">Welcome to Native Desktop</text>
-    <text foreground="text_muted">Built with the Native SDK</text>
+    <text foreground="text_muted">Fast, lightweight, and native — built with the Native SDK</text>
   </column>
   <row cross="center" gap="8">
     <column grow="1">
