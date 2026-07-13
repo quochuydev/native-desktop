@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.3](https://github.com/quochuydev/native-desktop/compare/v0.0.2...v0.0.3) (2026-07-13)
+
+
+### Features
+
+* add an Install button to apply available updates ([#6](https://github.com/quochuydev/native-desktop/issues/6)) ([27aa2aa](https://github.com/quochuydev/native-desktop/commit/27aa2aaee01a9c1970de98314a18faac12d08ac4))
+
 ## [0.0.2](https://github.com/quochuydev/native-desktop/compare/v0.0.1...v0.0.2) (2026-07-13)
 
 
