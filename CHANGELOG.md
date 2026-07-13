@@ -12,5 +12,3 @@
 ### Miscellaneous Chores
 
 * reset release baseline to 0.0.1 ([f3d14fb](https://github.com/quochuydev/native-desktop/commit/f3d14fb7ea8777c49441d56918dcf19fa3e792a4))
-
-## Changelog
