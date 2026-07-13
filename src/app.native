@@ -1,6 +1,7 @@
-<!-- App version bottom-right; update-check status bottom-left. The core
-     fetches latest.txt on boot and flips {updateReady}. Validate with:
-     native check -->
+<!-- App version bottom-right; update-check status bottom-left. When an
+     update is available the core flips {updateReady} and an Install button
+     appears; pressing it dispatches `install`, which spawns the installer.
+     Validate with: native check -->
 <column grow="1" padding="16">
   <column grow="1" main="center" cross="center" gap="8">
     <text size="display">Welcome to Native Desktop</text>
@@ -8,13 +9,21 @@
   </column>
   <row cross="center" gap="8">
     <column grow="1">
-      <if test="{updateReady}">
-        <text foreground="accent">Update available: v{latest}</text>
+      <if test="{installing}">
+        <text foreground="accent">{statusMsg}</text>
       </if>
       <else>
-        <text foreground="text_muted">{statusMsg}</text>
+        <if test="{updateReady}">
+          <text foreground="accent">Update available: v{latest}</text>
+        </if>
+        <else>
+          <text foreground="text_muted">{statusMsg}</text>
+        </else>
       </else>
     </column>
+    <if test="{updateReady}">
+      <button size="sm" variant="primary" on-press="install" disabled="{installing}">Install v{latest}</button>
+    </if>
     <text foreground="text_muted">v{version}</text>
   </row>
 </column>
