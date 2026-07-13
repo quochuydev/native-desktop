@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.4](https://github.com/quochuydev/native-desktop/compare/v0.0.3...v0.0.4) (2026-07-13)
+
+
+### Features
+
+* reword welcome subtitle tagline ([#8](https://github.com/quochuydev/native-desktop/issues/8)) ([b399679](https://github.com/quochuydev/native-desktop/commit/b3996791f4254043bec77eb7d85af09cf6248ed9))
+
 ## [0.0.3](https://github.com/quochuydev/native-desktop/compare/v0.0.2...v0.0.3) (2026-07-13)
 
 
