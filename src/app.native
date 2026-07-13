@@ -1,0 +1,17 @@
+<!-- App version bottom-right; update-check status bottom-left. The core
+     fetches latest.txt on boot and flips {updateReady}. Validate with:
+     native check -->
+<column grow="1" padding="16">
+  <row grow="1"></row>
+  <row cross="center" gap="8">
+    <column grow="1">
+      <if test="{updateReady}">
+        <text foreground="accent">Update available: v{latest}</text>
+      </if>
+      <else>
+        <text foreground="text_muted">{statusMsg}</text>
+      </else>
+    </column>
+    <text foreground="text_muted">v{version}</text>
+  </row>
+</column>
