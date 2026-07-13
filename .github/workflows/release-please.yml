@@ -1,0 +1,89 @@
+name: release-please
+
+# release-please watches conventional-commit history on main and maintains a
+# "release PR". Merging that PR tags a release and cuts a GitHub Release; this
+# job then builds and packages the macOS app, uploads it to the release, and
+# bumps latest.txt on main so installed apps detect the new version.
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  release-please:
+    runs-on: macos-latest
+    steps:
+      - name: Run release-please
+        id: release
+        uses: googleapis/release-please-action@v4
+        with:
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
+
+      # Everything below runs only when a release was just created (i.e. the
+      # release PR was merged).
+      - name: Checkout
+        if: ${{ steps.release.outputs.release_created }}
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        if: ${{ steps.release.outputs.release_created }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Build and package the macOS app
+        if: ${{ steps.release.outputs.release_created }}
+        run: |
+          npm install -g @native-sdk/cli
+          native version
+          CORE_DIR="$(npm root -g)/@native-sdk/cli/packages/core"
+          if [ -d "$CORE_DIR" ]; then (cd "$CORE_DIR" && npm ci); fi
+          native check
+          native build --yes
+          native package --target macos
+          APP_PATH="$(find . -maxdepth 4 -name '*.app' -type d | head -n1)"
+          if [ -z "$APP_PATH" ]; then echo "::error::no .app produced"; exit 1; fi
+          ZIP="native-desktop-macos-${{ steps.release.outputs.tag_name }}.zip"
+          ditto -c -k --sequesterRsrc --keepParent "$APP_PATH" "$ZIP"
+          echo "ZIP=$ZIP" >> "$GITHUB_ENV"
+
+      - name: Upload assets and write manifest
+        if: ${{ steps.release.outputs.release_created }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          VER="${{ steps.release.outputs.version }}"
+          TAG="${{ steps.release.outputs.tag_name }}"
+          SHA="$(shasum -a 256 "$ZIP" | awk '{print $1}')"
+          cat > latest.json <<EOF
+          {
+            "version": "$VER",
+            "notes": "See the release notes for $TAG.",
+            "platform": "macos",
+            "url": "https://github.com/${{ github.repository }}/releases/download/$TAG/$ZIP",
+            "sha256": "$SHA"
+          }
+          EOF
+          gh release upload "$TAG" "$ZIP" latest.json --clobber
+
+      - name: Bump latest.txt on main
+        if: ${{ steps.release.outputs.release_created }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          VER="${{ steps.release.outputs.version }}"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch origin main
+          git checkout main
+          printf '%s\n' "$VER" > latest.txt
+          if ! git diff --quiet latest.txt; then
+            git commit -am "chore: latest.txt -> v$VER"
+            git push origin main
+          fi

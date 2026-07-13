@@ -1,16 +1,15 @@
 // The app core: Model, Msg, update - plain TypeScript in the app-core
-// subset, compiled to native Zig at build time. On boot it fetches the
-// latest published version from the repo's `latest.txt` and compares it
-// to this build's version, surfacing an "update available" status. The
-// current version shows bottom-right; the update status shows bottom-left.
+// subset, compiled to native Zig at build time. On boot (and then every
+// 20s) it fetches the latest published version from the repo's
+// `latest.txt` and compares it to this build's version, surfacing an
+// "update available" status. The current version shows bottom-right; the
+// update status shows bottom-left.
 
-import { Cmd, asciiBytes } from "@native-sdk/core";
+import { Cmd, Sub, asciiBytes } from "@native-sdk/core";
 
-// The current build version ("0.1.0") and the latest.txt URL are inlined
-// into asciiBytes(...) below: the intrinsic folds only literal/template
-// arguments (not const references). Keep the version literal in sync with
-// `.version` in app.zon and `latest.txt` on the default branch (the
-// release workflow bumps all three together).
+// The version literals below are bumped by release-please via the
+// `x-release-please-version` annotations (see release-please-config.json).
+// Keep them consistent with `.version` in app.zon.
 
 export interface Model {
   // Model text is bytes in the app-core subset, not a JS string.
@@ -25,16 +24,18 @@ export type Msg =
   // field (body), matched by type
   | { readonly kind: "checked"; readonly status: number; readonly body: Uint8Array }
   // the fetch error arm: one bytes field (machine-readable reason)
-  | { readonly kind: "checkFailed"; readonly reason: Uint8Array };
+  | { readonly kind: "checkFailed"; readonly reason: Uint8Array }
+  // the recurring re-check tick: one number field (the fire time)
+  | { readonly kind: "recheck"; readonly at: number };
 
-// Both arms are dispatched by the host (the boot fetch), never from
-// markup - this keeps `native check`'s unbound lint honest about that.
-export const viewUnbound = ["checked", "checkFailed"] as const;
+// These arms are dispatched by the host (the boot fetch, the fetch result,
+// and the re-check timer), never from markup - keep the unbound lint honest.
+export const viewUnbound = ["checked", "checkFailed", "recheck"] as const;
 
 export function initialModel(): [Model, Cmd<Msg>] {
   const model: Model = {
-    version: asciiBytes("0.0.1"),
-    latest: asciiBytes("0.0.1"),
+    version: asciiBytes("0.0.1"), // x-release-please-version
+    latest: asciiBytes("0.0.1"), // x-release-please-version
     updateReady: false,
     statusMsg: asciiBytes("checking for updates..."),
   };
@@ -49,7 +50,7 @@ export function initialModel(): [Model, Cmd<Msg>] {
   ];
 }
 
-export function update(model: Model, msg: Msg): Model {
+export function update(model: Model, msg: Msg): Model | [Model, Cmd<Msg>] {
   switch (msg.kind) {
     case "checked": {
       if (msg.status !== 200) {
@@ -65,5 +66,21 @@ export function update(model: Model, msg: Msg): Model {
     }
     case "checkFailed":
       return { ...model, updateReady: false, statusMsg: asciiBytes("offline - update check failed") };
+    case "recheck":
+      // Re-issue the fetch on every tick; the same key replaces any
+      // in-flight check. This is what makes the running app pick up a new
+      // release without a restart.
+      return [
+        model,
+        Cmd.fetch(
+          { url: asciiBytes("https://raw.githubusercontent.com/quochuydev/native-desktop/main/latest.txt") },
+          { key: "update-check", ok: "checked", err: "checkFailed" },
+        ),
+      ];
   }
+}
+
+// Re-check for updates every 20 seconds while the app runs.
+export function subscriptions(model: Model): Sub<Msg> {
+  return Sub.timer("recheck", 20000, "recheck");
 }
