@@ -4,23 +4,13 @@ A small native macOS app built with the [Native SDK](https://native-sdk.dev).
 
 ## Install & run (macOS)
 
-```sh
-gh release download --repo quochuydev/native-desktop --pattern "*.zip"
-unzip -o native-desktop-macos-*.zip
-APP="$(ls -d *.app | head -1)"
-xattr -dr com.apple.quarantine "$APP"   # unsigned build: clear Gatekeeper
-open "$APP"
-```
-
-Or download the `.zip` from the [latest release](https://github.com/quochuydev/native-desktop/releases/latest) and right-click → Open.
+1. Download the `.zip` from the [latest release](https://github.com/quochuydev/native-desktop/releases/latest).
+2. Double-click the `.zip` to unzip it.
+3. **Right-click** the app → **Open** (needed the first time, since the app isn't signed yet).
 
 ## Updates
 
-Checks on launch and every 20s; shows **"Update available: vX.Y.Z"** when a newer release exists. See the current published version:
-
-```sh
-curl -s https://raw.githubusercontent.com/quochuydev/native-desktop/main/latest.txt
-```
+The app checks automatically and shows **"Update available: vX.Y.Z"** in the bottom-left corner when a newer release exists. To update, download the new release the same way.
 
 ## Develop
 
