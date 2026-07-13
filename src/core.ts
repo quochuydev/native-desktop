@@ -33,8 +33,8 @@ export const viewUnbound = ["checked", "checkFailed"] as const;
 
 export function initialModel(): [Model, Cmd<Msg>] {
   const model: Model = {
-    version: asciiBytes("0.1.0"),
-    latest: asciiBytes("0.1.0"),
+    version: asciiBytes("0.0.1"),
+    latest: asciiBytes("0.0.1"),
     updateReady: false,
     statusMsg: asciiBytes("checking for updates..."),
   };
