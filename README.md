@@ -8,6 +8,12 @@ A small native macOS app built with the [Native SDK](https://native-sdk.dev).
 2. Double-click the `.zip` to unzip it.
 3. **Right-click** the app → **Open** (needed the first time, since the app isn't signed yet).
 
+Prefer the terminal? One line does all of the above:
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/quochuydev/native-desktop/main/install.sh | bash
+```
+
 ## Updates
 
 The app checks automatically and shows **"Update available: vX.Y.Z"** in the bottom-left corner when a newer release exists. To update, download the new release the same way.
