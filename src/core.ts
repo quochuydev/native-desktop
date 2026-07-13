@@ -16,6 +16,7 @@ export interface Model {
   readonly version: Uint8Array; // this build, shown bottom-right
   readonly latest: Uint8Array; // newest published version (from latest.txt)
   readonly updateReady: boolean; // latest differs from this build
+  readonly installing: boolean; // an install is in flight (spawned installer)
   readonly statusMsg: Uint8Array; // human-readable check status
 }
 
@@ -26,17 +27,25 @@ export type Msg =
   // the fetch error arm: one bytes field (machine-readable reason)
   | { readonly kind: "checkFailed"; readonly reason: Uint8Array }
   // the recurring re-check tick: one number field (the fire time)
-  | { readonly kind: "recheck"; readonly at: number };
+  | { readonly kind: "recheck"; readonly at: number }
+  // the "Install" button in the view: run the installer for the new build
+  | { readonly kind: "install" }
+  // the installer subprocess finished cleanly: one number field (exit code)
+  | { readonly kind: "installExit"; readonly code: number }
+  // the installer subprocess could not run / was killed: one bytes field (reason)
+  | { readonly kind: "installFailed"; readonly reason: Uint8Array };
 
 // These arms are dispatched by the host (the boot fetch, the fetch result,
-// and the re-check timer), never from markup - keep the unbound lint honest.
-export const viewUnbound = ["checked", "checkFailed", "recheck"] as const;
+// the re-check timer, and the installer subprocess), never from markup -
+// keep the unbound lint honest. `install` is omitted: the view binds it.
+export const viewUnbound = ["checked", "checkFailed", "recheck", "installExit", "installFailed"] as const;
 
 export function initialModel(): [Model, Cmd<Msg>] {
   const model: Model = {
     version: asciiBytes("0.0.2"), // x-release-please-version
     latest: asciiBytes("0.0.2"), // x-release-please-version
     updateReady: false,
+    installing: false,
     statusMsg: asciiBytes("checking for updates..."),
   };
   // Effects are inert data: the host performs this fetch after the model
@@ -53,6 +62,11 @@ export function initialModel(): [Model, Cmd<Msg>] {
 export function update(model: Model, msg: Msg): Model | [Model, Cmd<Msg>] {
   switch (msg.kind) {
     case "checked": {
+      // An install is in flight - don't let a background re-check flip the
+      // status text or the button out from under it.
+      if (model.installing) {
+        return model;
+      }
       if (msg.status !== 200) {
         return { ...model, updateReady: false, statusMsg: asciiBytes("update check unavailable") };
       }
@@ -77,6 +91,31 @@ export function update(model: Model, msg: Msg): Model | [Model, Cmd<Msg>] {
           { key: "update-check", ok: "checked", err: "checkFailed" },
         ),
       ];
+    case "install":
+      // Spawn the same one-liner installer the docs ship: it downloads the
+      // latest release, swaps the app in /Applications, and relaunches it.
+      // We only report the terminal exit - lines are dropped.
+      return [
+        { ...model, installing: true, statusMsg: asciiBytes("downloading and installing update...") },
+        Cmd.spawn(
+          [
+            asciiBytes("/bin/bash"),
+            asciiBytes("-lc"),
+            asciiBytes("curl -fsSL https://raw.githubusercontent.com/quochuydev/native-desktop/main/install.sh | bash"),
+          ],
+          { key: "install", exit: "installExit", err: "installFailed" },
+        ),
+      ];
+    case "installExit":
+      // A clean exit (code 0) means the new build is in /Applications and the
+      // installer relaunched it; this old instance can be quit. Any non-zero
+      // code is a failed install - the next re-check restores the button.
+      if (msg.code === 0) {
+        return { ...model, installing: false, updateReady: false, statusMsg: asciiBytes("updated - quit this window to finish") };
+      }
+      return { ...model, installing: false, updateReady: false, statusMsg: asciiBytes("update failed - will retry shortly") };
+    case "installFailed":
+      return { ...model, installing: false, updateReady: false, statusMsg: asciiBytes("update failed - will retry shortly") };
   }
 }
 
