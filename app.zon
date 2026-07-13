@@ -3,7 +3,7 @@
     .name = "native-desktop",
     .display_name = "Native Desktop",
     .description = "A counter that lives in one native window.",
-    .version = "0.0.1", // x-release-please-version
+    .version = "0.0.2", // x-release-please-version
     .icons = .{"assets/icon.png"},
     .platforms = .{"macos"},
     .permissions = .{ "view", "command" },
