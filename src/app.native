@@ -2,7 +2,10 @@
      fetches latest.txt on boot and flips {updateReady}. Validate with:
      native check -->
 <column grow="1" padding="16">
-  <row grow="1"></row>
+  <column grow="1" main="center" cross="center" gap="8">
+    <text size="display">Welcome to Native Desktop</text>
+    <text foreground="text_muted">Built with the Native SDK</text>
+  </column>
   <row cross="center" gap="8">
     <column grow="1">
       <if test="{updateReady}">
