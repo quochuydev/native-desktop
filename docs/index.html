@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Native Desktop — Quickstart</title>
+<meta name="description" content="Install, run, and update Native Desktop — a native macOS app built with the Native SDK." />
+<style>
+  :root {
+    --bg: #ffffff; --fg: #1a1a1a; --muted: #6b7280; --border: #e5e7eb;
+    --card: #f9fafb; --code-bg: #0f1117; --code-fg: #e6e6e6;
+    --accent: #d97757; --accent-fg: #ffffff; --link: #b45309;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0d0d0f; --fg: #e8e8ea; --muted: #9ca3af; --border: #26262b;
+      --card: #16161a; --code-bg: #16161a; --code-fg: #e6e6e6;
+      --accent: #d97757; --link: #e0a679;
+    }
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0; background: var(--bg); color: var(--fg);
+    font: 16px/1.65 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  header.top {
+    position: sticky; top: 0; z-index: 10; backdrop-filter: blur(8px);
+    background: color-mix(in srgb, var(--bg) 85%, transparent);
+    border-bottom: 1px solid var(--border);
+  }
+  .top .wrap { display: flex; align-items: center; gap: 12px; }
+  .top .dot { width: 22px; height: 22px; border-radius: 6px; background: var(--accent); }
+  .top strong { font-weight: 650; }
+  .top a.gh { margin-left: auto; color: var(--muted); text-decoration: none; font-size: 14px; }
+  .top a.gh:hover { color: var(--fg); }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 14px 22px; }
+  main.wrap { padding: 8px 22px 80px; }
+  h1 { font-size: 2.1rem; line-height: 1.15; margin: 28px 0 8px; letter-spacing: -0.02em; }
+  .lede { color: var(--muted); font-size: 1.12rem; margin: 0 0 22px; }
+  h2 { font-size: 1.35rem; margin: 44px 0 12px; letter-spacing: -0.01em; }
+  h3 { font-size: 1.02rem; margin: 24px 0 6px; }
+  p { margin: 10px 0; }
+  a { color: var(--link); }
+  ol.steps { list-style: none; counter-reset: s; padding: 0; margin: 16px 0; }
+  ol.steps > li {
+    counter-increment: s; position: relative; padding: 2px 0 2px 44px; margin: 18px 0;
+  }
+  ol.steps > li::before {
+    content: counter(s); position: absolute; left: 0; top: 0;
+    width: 28px; height: 28px; border-radius: 50%; background: var(--accent);
+    color: var(--accent-fg); font-size: 14px; font-weight: 700;
+    display: grid; place-items: center;
+  }
+  pre {
+    background: var(--code-bg); color: var(--code-fg); border: 1px solid var(--border);
+    border-radius: 10px; padding: 14px 16px; overflow-x: auto; margin: 12px 0;
+    font: 13.5px/1.6 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 0.9em; }
+  p code, li code { background: var(--card); border: 1px solid var(--border); border-radius: 5px; padding: 1px 5px; }
+  .note {
+    border: 1px solid var(--border); border-left: 3px solid var(--accent);
+    background: var(--card); border-radius: 8px; padding: 12px 16px; margin: 16px 0; font-size: 0.95rem;
+  }
+  .note strong { color: var(--accent); }
+  .cta { display: inline-block; background: var(--accent); color: var(--accent-fg);
+    text-decoration: none; padding: 9px 18px; border-radius: 8px; font-weight: 600; margin: 4px 8px 4px 0; }
+  .cta.secondary { background: transparent; color: var(--fg); border: 1px solid var(--border); }
+  footer { border-top: 1px solid var(--border); color: var(--muted); font-size: 14px; }
+  footer .wrap { padding: 22px; }
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <span class="dot"></span>
+    <strong>Native Desktop</strong>
+    <a class="gh" href="https://github.com/quochuydev/native-desktop">GitHub ↗</a>
+  </div>
+</header>
+
+<main class="wrap">
+  <h1>Quickstart</h1>
+  <p class="lede">A small native macOS app built with the
+    <a href="https://native-sdk.dev">Native SDK</a> — no browser, no WebView.
+    Install it in under a minute, and it tells you when an update is out.</p>
+
+  <a class="cta" href="https://github.com/quochuydev/native-desktop/releases/latest">Download latest ↓</a>
+  <a class="cta secondary" href="#build">Build from source</a>
+
+  <div class="note">
+    <strong>Requirements.</strong> macOS 11 or newer. The app is a single native
+    binary — nothing else to install to run it.
+  </div>
+
+  <h2>Install &amp; run</h2>
+  <ol class="steps">
+    <li>Download the <code>.zip</code> from the
+      <a href="https://github.com/quochuydev/native-desktop/releases/latest">latest release</a>.</li>
+    <li>Double-click the <code>.zip</code> to unzip it.</li>
+    <li><strong>Right-click</strong> the app → <strong>Open</strong> (needed the first
+      time, since the app isn't code-signed yet).</li>
+  </ol>
+
+  <h3>Prefer the terminal?</h3>
+  <p>One line downloads, installs to <code>/Applications</code>, and opens it:</p>
+  <pre>curl -fsSL https://raw.githubusercontent.com/quochuydev/native-desktop/main/install.sh | bash</pre>
+
+  <h2>Updates</h2>
+  <p>The app checks automatically on launch and every 20 seconds. When a newer
+    release exists, it shows <strong>“Update available: vX.Y.Z”</strong> in the
+    bottom-left corner — the current version is always shown bottom-right.</p>
+  <p>To update, download the new release the same way. Releases are cut
+    automatically with <a href="https://github.com/googleapis/release-please-action">release-please</a>.</p>
+
+  <h2 id="build">Build from source</h2>
+  <p>Install the Native SDK CLI, then:</p>
+  <pre>npm install -g @native-sdk/cli
+
+git clone https://github.com/quochuydev/native-desktop.git
+cd native-desktop
+
+native dev      # build and run (hot reload)
+native check    # validate core + markup + app.zon
+native build    # release binary</pre>
+  <div class="note">
+    Logic lives in <code>src/core.ts</code> (Model / Msg / update), the view in
+    <code>src/app.native</code>. Requires Node.js 22+ at build time; the shipped
+    binary carries no JS runtime.
+  </div>
+
+  <h2>Next steps</h2>
+  <p>
+    <a href="https://github.com/quochuydev/native-desktop">Source &amp; issues</a> ·
+    <a href="https://github.com/quochuydev/native-desktop/blob/main/RELEASING.md">Releasing</a> ·
+    <a href="https://github.com/quochuydev/native-desktop/blob/main/AUTO_UPDATE.md">Auto-update design</a> ·
+    <a href="https://native-sdk.dev">Native SDK docs</a>
+  </p>
+</main>
+
+<footer>
+  <div class="wrap">Native Desktop — built with the Native SDK. Apache-2.0.</div>
+</footer>
+</body>
+</html>
