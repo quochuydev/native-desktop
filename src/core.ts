@@ -34,8 +34,8 @@ export const viewUnbound = ["checked", "checkFailed", "recheck"] as const;
 
 export function initialModel(): [Model, Cmd<Msg>] {
   const model: Model = {
-    version: asciiBytes("0.0.1"), // x-release-please-version
-    latest: asciiBytes("0.0.1"), // x-release-please-version
+    version: asciiBytes("0.0.2"), // x-release-please-version
+    latest: asciiBytes("0.0.2"), // x-release-please-version
     updateReady: false,
     statusMsg: asciiBytes("checking for updates..."),
   };

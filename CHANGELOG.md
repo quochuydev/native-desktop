@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.0.2](https://github.com/quochuydev/native-desktop/compare/v0.0.1...v0.0.2) (2026-07-13)
+
+
+### Features
+
+* add install.sh one-liner installer for macOS ([c03a132](https://github.com/quochuydev/native-desktop/commit/c03a132351114c11c2071dc1de4be90651ea57df))
+* refresh welcome subtitle copy on main screen ([#5](https://github.com/quochuydev/native-desktop/issues/5)) ([28c474a](https://github.com/quochuydev/native-desktop/commit/28c474ac15fff45a878dfad5a16cdec1cc91fdd4))
+
 ## 0.0.1 (2026-07-13)
 
 
